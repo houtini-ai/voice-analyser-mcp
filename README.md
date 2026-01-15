@@ -3,18 +3,17 @@
 [![npm version](https://img.shields.io/npm/v/@houtini/voice-analyser)](https://www.npmjs.com/package/@houtini/voice-analyser)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Extract statistical voice models from your published writing. Generate immersive style guides that teach LLMs to replicate how you actually write - not through rules, but through examples and rhythm patterns.
+> **Experimental library** for extracting statistical voice models from your published writing. Generates immersive style guides that teach LLMs to replicate how you actually write - not through rules, but through examples and rhythm patterns.
 
-## What's New in v1.2.0
+## Why This Exists
 
-**Micro-Rhythm Analysis** - The guide now annotates examples with the invisible patterns that make writing feel human:
-- Mid-thought pivots (comma before "and", "but", "so")
-- Present-tense immediacy
-- Embedded uncertainty
-- Parenthetical asides
-- Punchy fragments contrasting with longer sentences
+Traditional style guides list rules: "Use short sentences. Vary paragraph length. Include personal anecdotes."
 
-These patterns are what distinguish "competent technical writing" from "a specific person thinking on the page."
+This doesn't work. Writers don't follow rules - they channel voice.
+
+This tool extracts the statistical fingerprint of your writing and presents it as immersive examples with annotations showing *what makes each passage feel human*. The goal is voice replication through pattern recognition, not rule compliance.
+
+**Status:** Experimental. The approach works but is under active development.
 
 ## Installation
 
@@ -46,41 +45,128 @@ Restart Claude Desktop after saving.
 
 ## Quick Start
 
-### 1. Collect Your Writing
+### 1. Create an Output Directory
+
+First, create a directory where your corpus and analysis will be stored:
 
 ```
-Collect corpus from https://yoursite.com/post-sitemap.xml as "your-name"
+C:\writing\voice-models\        (Windows)
+~/writing/voice-models/          (Mac/Linux)
 ```
 
-Works with XML sitemaps. Collects up to 100 articles by default.
+This directory will contain:
+- Collected articles (markdown)
+- Analysis JSON files
+- Generated voice guides
 
-### 2. Analyse Patterns
-
-```
-Analyse corpus "your-name"
-```
-
-Generates statistical analysis across 14 analysers covering vocabulary, sentence structure, voice markers, argument flow, and paragraph transitions.
-
-### 3. Generate Voice Guide
+### 2. Collect Your Writing
 
 ```
-Generate narrative guide for "your-name"
+Collect corpus from https://yoursite.com/post-sitemap.xml 
+Save as "my-voice" in "C:\writing\voice-models"
 ```
 
-Creates an immersive style guide with annotated examples showing *what* makes each passage feel human.
+The tool needs:
+- `sitemap_url` - Your XML sitemap URL
+- `output_name` - A name for this corpus (e.g., "my-voice", "blog-posts")
+- `output_dir` - The directory you created above
 
-## Philosophy: Immersion Over Rules
+**Example with all parameters:**
+```
+Collect corpus from https://example.com/post-sitemap.xml
+Output name: "technical-writing"  
+Output directory: "C:\writing\voice-models"
+Maximum articles: 50
+```
 
-Traditional style guides list rules: "Use short sentences. Vary paragraph length. Include personal anecdotes."
+### 3. Analyse Patterns
 
-This doesn't work. Writers don't follow rules - they channel voice.
+```
+Analyse corpus "my-voice" in directory "C:\writing\voice-models"
+```
 
-**The Narrative Guide approach:**
-1. Show extended examples from your actual writing
-2. Annotate the micro-rhythms that create the "feel"
-3. Let patterns emerge through reading, not memorising
-4. Use statistics only for validation after writing
+This runs 14 analysers covering vocabulary, sentence structure, voice markers, argument flow, and paragraph transitions.
+
+### 4. Generate Voice Guide
+
+```
+Generate narrative guide for "my-voice" in directory "C:\writing\voice-models"
+```
+
+Creates an immersive style guide with annotated examples at:
+`C:\writing\voice-models\my-voice\writing_style_my-voice_narrative.md`
+
+## Using the Voice Guide
+
+Once generated, the voice guide can be loaded into any LLM conversation to help it write in your voice.
+
+### Loading the Guide
+
+```
+Load the file C:\writing\voice-models\my-voice\writing_style_my-voice_narrative.md 
+and use it as a reference for all writing in this conversation.
+```
+
+### Example Prompts for Content Generation
+
+**Blog post:**
+```
+Using the voice guide as your reference, write a blog post about [topic].
+
+Key requirements:
+- Match the sentence rhythm patterns shown in the examples
+- Use the conversational devices naturally (not forced)
+- Include the micro-rhythms: mid-thought pivots, embedded uncertainty, present-tense immediacy
+- Vary sentence length as shown in the statistical targets
+- Use British/American spelling as indicated in the guide
+```
+
+**Technical article:**
+```
+Reference the voice guide and write a technical explanation of [concept].
+
+Channel the voice by:
+- Opening with the pattern shown in "Opening Moves" section
+- Using specific product/tool names, not generic references  
+- Including admissions of complexity or uncertainty where authentic
+- Following the argument flow patterns from the guide
+- Matching the punctuation habits (especially dash usage)
+```
+
+**Product review:**
+```
+Using the loaded voice guide, write a review of [product].
+
+Capture the voice by:
+- Starting with personal context (why you tested this)
+- Blending technical specs with practical implications
+- Using the transition patterns between paragraphs
+- Including the "human tells" - parenthetical asides, mid-thought corrections
+- Ending with the closing patterns shown in examples
+```
+
+**Email/communication:**
+```
+Write an email about [subject] using the voice patterns from the guide.
+
+Focus on:
+- Conversational markers appearing naturally
+- Sentence length variation (some punchy, some complex)
+- The hedging/confidence balance shown in statistics
+- First-person usage matching the corpus frequency
+```
+
+### Validation After Writing
+
+The guide includes statistical targets. After writing, check:
+
+```
+Review what you just wrote against the voice guide metrics:
+- Does sentence length variation match the target standard deviation?
+- Is first-person frequency within the expected range?
+- Are conversational markers present but not overused?
+- Does the rhythm feel like the extended examples?
+```
 
 ## What Gets Analysed
 
@@ -88,92 +174,40 @@ This doesn't work. Writers don't follow rules - they channel voice.
 - **Vocabulary** - Word choice, British/American markers, domain specificity
 - **Sentence structure** - Length distribution, openers, complexity patterns
 - **Voice markers** - First-person usage, hedging language, conversational markers
-- **Punctuation** - Dash types (critical AI tell), comma density, parenthetical frequency
+- **Punctuation** - Dash types, comma density, parenthetical frequency
 
 ### Argument & Flow Patterns
 - **Argument flow** - How you open, build, and close arguments
 - **Paragraph transitions** - How ideas connect across paragraphs
-- **Energy shifts** - How tone changes through a piece
 - **Conversational devices** - "look", "frankly", "actually" and when they appear
 
-### Micro-Rhythm Detection (New in v1.2.0)
-- Mid-thought pivots (", and", ", but")
+### Micro-Rhythm Detection
+The guide annotates examples with invisible patterns that make writing feel human:
+- Mid-thought pivots (comma before "and", "but", "so")
 - Present-tense immediacy ("Right now, it's...")
 - Embedded uncertainty ("I think", "probably")
 - Casual sentence starters ("So,", "And,", "But,")
 - Parenthetical asides
-- Self-corrections ("or rather", "I mean")
-- Future uncertainty / open loops
 - Punchy fragments contrasting with longer sentences
 
-## Output Example
-
-The narrative guide annotates examples like this:
-
-```markdown
-**Example:**
+## Output Structure
 
 ```
-For my first post, I'm going to document the build of my 4 x water-cooled 
-RTX 3090 rig. Right now, it's hashing away and, I've added an RTX 2080 ti 
-into the mix until a few more cards arrive.
+your-output-directory/
+└── corpus-name/
+    ├── articles/                              # Collected markdown files
+    ├── corpus.json                            # Metadata
+    ├── analysis/                              # JSON analysis files
+    │   ├── vocabulary.json
+    │   ├── sentence.json
+    │   ├── voice.json
+    │   ├── paragraph.json
+    │   ├── punctuation.json
+    │   ├── function-words.json
+    │   ├── argument-flow.json
+    │   └── paragraph-transitions.json
+    └── writing_style_[name]_narrative.md      # The voice guide
 ```
-
-**What makes this feel human:**
-
-- Present tense creates "happening now" energy
-  *"...RTX 3090 rig. Right now, it's hashing away..."*
-
-- Acknowledging pending/uncertain future - real people have open loops
-  *"...into the mix until a few more cards arrive..."*
-```
-
-Multi-paragraph sequences get comprehensive analysis:
-
-```markdown
-**Structure:** 3 paragraphs, 9 sentences, 176 words
-
-**Human tells in this passage:**
-- **Mid-thought pivots** (2x) - the writer pauses mid-sentence then redirects
-- **Embedded uncertainty** - doubt woven into sentences shows real-time thinking
-
-**Specific moments to notice:**
-- "...build time, I think the 2nd one would..." - uncertainty mid-sentence
-- "...instructions are OK but not perfect, so you're left..." - comma before "so"
-```
-
-## Tools Reference
-
-### collect_corpus
-
-Crawl a sitemap and extract article content.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `sitemap_url` | Yes | XML sitemap URL |
-| `output_name` | Yes | Corpus identifier |
-| `output_dir` | Yes | Where to store corpus |
-| `max_articles` | No | Limit (default: 100) |
-| `article_pattern` | No | Regex filter for URLs |
-
-### analyze_corpus
-
-Run all analysers on collected corpus.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `corpus_name` | Yes | Name from collect_corpus |
-| `corpus_dir` | Yes | Directory containing corpus |
-| `analysis_type` | No | full, quick, vocabulary, syntax |
-
-### generate_narrative_guide
-
-Generate immersive voice guide with micro-rhythm annotations.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `corpus_name` | Yes | Name from analyze_corpus |
-| `corpus_dir` | Yes | Directory containing corpus |
 
 ## Minimum Corpus Size
 
@@ -183,24 +217,32 @@ Generate immersive voice guide with micro-rhythm annotations.
 
 Below 15k words, statistical patterns become unreliable.
 
-## Output Structure
+## Tools Reference
 
-```
-corpus/
-└── your-name/
-    ├── articles/                           # Collected markdown
-    ├── corpus.json                         # Metadata
-    ├── analysis/                           # JSON analysis files
-    │   ├── vocabulary.json
-    │   ├── sentence.json
-    │   ├── voice.json
-    │   ├── paragraph.json
-    │   ├── punctuation.json
-    │   ├── function-words.json
-    │   ├── argument-flow.json
-    │   └── paragraph-transitions.json
-    └── writing_style_your-name_narrative.md  # The voice guide
-```
+### collect_corpus
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `sitemap_url` | Yes | XML sitemap URL |
+| `output_name` | Yes | Corpus identifier (e.g., "my-voice") |
+| `output_dir` | Yes | Directory to store corpus |
+| `max_articles` | No | Limit (default: 100) |
+| `article_pattern` | No | Regex filter for URLs |
+
+### analyze_corpus
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `corpus_name` | Yes | Name from collect_corpus |
+| `corpus_dir` | Yes | Directory containing corpus |
+| `analysis_type` | No | full, quick, vocabulary, syntax |
+
+### generate_narrative_guide
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `corpus_name` | Yes | Name from analyze_corpus |
+| `corpus_dir` | Yes | Directory containing corpus |
 
 ## Development
 
@@ -211,13 +253,12 @@ npm install
 npm run build
 ```
 
-## Research Foundation
+## Limitations
 
-The function word stylometry approach draws from computational authorship analysis. Z-score comparisons against reference English corpora create statistical fingerprints.
-
-Key insight: function words (the, of, and, to) are used unconsciously and form stable individual patterns. Content words vary by topic; function words reveal the author.
-
-The micro-rhythm analysis extends this to punctuation-level patterns - the pauses, pivots, and asides that create the "feel" of human writing.
+- Requires XML sitemap (RSS feeds not currently supported)
+- Works best with consistent single-author content
+- Mixed authorship or heavily edited content produces weaker signals
+- The approach is experimental - results vary by writing style
 
 ---
 
