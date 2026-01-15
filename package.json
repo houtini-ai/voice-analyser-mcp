@@ -1,6 +1,6 @@
 {
   "name": "@houtini/voice-analyser",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "MCP server for automatic tone-of-voice analysis from published writing corpus",
   "type": "module",
   "main": "dist/index.js",
@@ -31,7 +31,7 @@
     "email": "hello@houtini.ai",
     "url": "https://houtini.ai"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/houtini-ai/voice-analyser-mcp.git"

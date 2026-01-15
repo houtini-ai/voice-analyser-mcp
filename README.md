@@ -1,7 +1,7 @@
 # Voice Analyser
 
 [![npm version](https://img.shields.io/npm/v/@houtini/voice-analyser)](https://www.npmjs.com/package/@houtini/voice-analyser)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 > **Experimental library** for extracting statistical voice models from your published writing. Generates immersive style guides that teach LLMs to replicate how you actually write - not through rules, but through examples and rhythm patterns.
 
@@ -262,4 +262,4 @@ npm run build
 
 ---
 
-MIT License - [Houtini.ai](https://houtini.ai)
+Apache License 2.0 - [Houtini.ai](https://houtini.ai)
