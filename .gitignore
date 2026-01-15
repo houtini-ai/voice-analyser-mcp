@@ -1,0 +1,34 @@
+node_modules/
+dist/
+.npmrc
+*.log
+.DS_Store
+corpus/
+templates/
+archive/
+research/
+
+# Development artifacts
+commit-*.bat
+test-*.ts
+test-*.js
+cleanup*.bat
+temp-*.bat
+version-bump.bat
+HANDOVER*.md
+PHASE*.md
+PUBLISHED*.md
+FIX-*.md
+*-AUDIT-*.md
+*-CHECKLIST.md
+*-SUMMARY.md
+QUICKSTART.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db

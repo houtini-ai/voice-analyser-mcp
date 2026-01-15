@@ -1,0 +1,67 @@
+{
+  "name": "@houtini/voice-analyser",
+  "version": "1.2.0",
+  "description": "MCP server for automatic tone-of-voice analysis from published writing corpus",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "voice-analyser": "./dist/index.js"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "voice-analysis",
+    "tone-of-voice",
+    "content",
+    "llm",
+    "writing-style",
+    "corpus-analysis"
+  ],
+  "author": {
+    "name": "Houtini",
+    "email": "hello@houtini.ai",
+    "url": "https://houtini.ai"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/houtini-ai/voice-analyser-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/houtini-ai/voice-analyser-mcp/issues"
+  },
+  "homepage": "https://github.com/houtini-ai/voice-analyser-mcp#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "cheerio": "^1.0.0",
+    "compromise": "^14.14.0",
+    "fast-xml-parser": "^4.5.0",
+    "natural": "^8.0.1",
+    "node-fetch": "^3.3.2",
+    "turndown": "^7.2.0",
+    "wink-eng-lite-web-model": "^1.8.1",
+    "wink-nlp": "^2.4.0",
+    "wink-nlp-utils": "^2.1.0"
+  },
+  "devDependencies": {
+    "@types/natural": "^5.1.5",
+    "@types/node": "^22.10.1",
+    "@types/turndown": "^5.0.5",
+    "typescript": "^5.7.2"
+  }
+}
