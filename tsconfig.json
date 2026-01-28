@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "Node16",
-    "moduleResolution": "Node16",
-    "lib": ["ES2022"],
+    "module": "nodenext",
+    "lib": ["ES2022", "DOM"],
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
