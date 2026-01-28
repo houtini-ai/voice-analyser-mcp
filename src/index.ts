@@ -12,7 +12,7 @@ import * as z from 'zod';
 
 import { collectCorpus, CollectCorpusParams } from './tools/collect-corpus.js';
 import { analyzeCorpus, AnalyzeCorpusParams } from './tools/analyze-corpus.js';
-import { generateNarrativeGuide, NarrativeGuideParams } from './tools/generate-narrative-guide.js';
+import { generateStyleGuide, StyleGuideParams } from './tools/generate-narrative-guide-v3.js';
 
 const server = new McpServer({
   name: 'voice-analysis-server',
@@ -87,10 +87,10 @@ server.registerTool(
 );
 
 server.registerTool(
-  'generate_narrative_guide',
+  'generate_style_guide',
   {
-    title: 'Generate Narrative Guide',
-    description: 'Generate NARRATIVE voice immersion guide focused on examples, patterns, and flow rather than statistics. Teaches voice through immersion, not compliance.',
+    title: 'Generate Style Guide',
+    description: 'Generate EXECUTABLE style guide focused on prescriptive rules with do/don\'t examples. Teaches voice through clear instructions, validation checklists, and corpus statistics.',
     inputSchema: {
       corpus_name: z.string().describe('Name of analyzed corpus'),
       corpus_dir: z.string().describe('Directory where corpus is stored'),
@@ -98,7 +98,7 @@ server.registerTool(
   },
   async ({ corpus_name, corpus_dir }) => {
     try {
-      const result = await generateNarrativeGuide({
+      const result = await generateStyleGuide({
         corpus_name,
         corpus_dir,
       });
