@@ -1,7 +1,7 @@
 # Voice Analyser
 
 [![npm version](https://img.shields.io/npm/v/@houtini/voice-analyser)](https://www.npmjs.com/package/@houtini/voice-analyser)
-[![Known Vulnerabilities](https://snyk.io/test/github/houtini/mcp-server-voice-analysis/badge.svg)](https://snyk.io/test/github/houtini/mcp-server-voice-analysis)
+[![Known Vulnerabilities](https://snyk.io/test/github/houtini-ai/voice-analyser-mcp/badge.svg)](https://snyk.io/test/github/houtini-ai/voice-analyser-mcp)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 > **Experimental library** for extracting statistical voice models from your published writing. Generates immersive style guides that teach LLMs to replicate how you actually write - not through rules, but through examples and rhythm patterns.
