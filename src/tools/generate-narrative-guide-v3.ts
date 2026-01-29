@@ -184,7 +184,7 @@ function generateExecutableGuide(
   
   // HEADER
   lines.push(`# ${formatWriterName(writerName)} Writing Style Guide`);
-  lines.push(`*Corpus: ${metadata.wordCount.toLocaleString()} words across ${metadata.articleCount} articles*`);
+  lines.push(`*Corpus: ${metadata.statistics.total_words.toLocaleString()} words across ${metadata.statistics.total_articles} articles*`);
   lines.push('');
   lines.push('**Status:** Statistical truth derived from published corpus');
   lines.push('');
@@ -731,9 +731,9 @@ function generateExecutableGuide(
   // Corpus overview
   lines.push('### Corpus Overview');
   lines.push('');
-  lines.push(`- **Total words:** ${metadata.wordCount.toLocaleString()}`);
-  lines.push(`- **Articles analyzed:** ${metadata.articleCount}`);
-  lines.push(`- **Average article length:** ${Math.round(metadata.wordCount / metadata.articleCount).toLocaleString()} words`);
+  lines.push(`- **Total words:** ${metadata.statistics.total_words.toLocaleString()}`);
+  lines.push(`- **Articles analyzed:** ${metadata.statistics.total_articles}`);
+  lines.push(`- **Average article length:** ${Math.round(metadata.statistics.total_words / metadata.statistics.total_articles).toLocaleString()} words`);
   lines.push('');
   
   return lines.join('\n');
