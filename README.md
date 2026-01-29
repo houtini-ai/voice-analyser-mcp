@@ -11,7 +11,7 @@ Traditional style guides list rules: "Use short sentences. Vary paragraph length
 
 This doesn't work. Writers don't follow rules - they channel voice.
 
-This tool extracts the statistical fingerprint of your writing and presents it as immersive examples with annotations showing *what makes each passage feel human*. The goal is voice replication through pattern recognition, not rule compliance.
+This tool extracts the statistical fingerprint of *your writing* and presents it as immersive examples with annotations showing *what makes each passage feel human*. The goal is voice replication through pattern recognition, not rule compliance.
 
 **Status:** Experimental. The approach works but is under active development.
 
