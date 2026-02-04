@@ -19,6 +19,8 @@ import { analyzeArgumentFlow } from '../analyzers/argument-flow.js';
 import { analyzeParagraphTransitions } from '../analyzers/paragraph-transitions.js';
 import { analyzeSpecificityPatterns } from '../analyzers/specificity-patterns.js';
 import { analyzeVulnerabilityPatterns } from '../analyzers/vulnerability-patterns.js';
+import { analyzeVocabularyTiers } from '../analyzers/vocabulary-tiers.js';
+import { extractPhrases } from '../analyzers/phrase-extraction.js';
 
 export interface AnalyzeCorpusParams {
   corpus_name: string;
@@ -62,6 +64,22 @@ export async function analyzeCorpus(params: AnalyzeCorpusParams): Promise<Analyz
     await fs.writeFile(
       path.join(analysisDir, 'vocabulary.json'),
       JSON.stringify(vocabAnalysis, null, 2),
+      'utf-8'
+    );
+    
+    // Vocabulary tier analysis (formality & AI slop detection)
+    const vocabTierAnalysis = analyzeVocabularyTiers(combinedText);
+    await fs.writeFile(
+      path.join(analysisDir, 'vocabulary-tiers.json'),
+      JSON.stringify(vocabTierAnalysis, null, 2),
+      'utf-8'
+    );
+    
+    // Phrase extraction (opening patterns, transitions, equipment, caveats)
+    const phraseLibrary = extractPhrases(combinedText);
+    await fs.writeFile(
+      path.join(analysisDir, 'phrase-library.json'),
+      JSON.stringify(phraseLibrary, null, 2),
       'utf-8'
     );
   }

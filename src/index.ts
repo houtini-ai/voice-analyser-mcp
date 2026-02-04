@@ -12,7 +12,9 @@ import * as z from 'zod';
 
 import { collectCorpus, CollectCorpusParams } from './tools/collect-corpus.js';
 import { analyzeCorpus, AnalyzeCorpusParams } from './tools/analyze-corpus.js';
-import { generateStyleGuide, StyleGuideParams } from './tools/generate-narrative-guide-v3.js';
+import { generateNarrativeGuideV4 } from './tools/generate-narrative-guide-v4.js';
+import path from 'path';
+import fs from 'fs/promises';
 
 const server = new McpServer({
   name: 'voice-analysis-server',
@@ -90,7 +92,7 @@ server.registerTool(
   'generate_style_guide',
   {
     title: 'Generate Style Guide',
-    description: 'Generate EXECUTABLE style guide focused on prescriptive rules with do/don\'t examples. Teaches voice through clear instructions, validation checklists, and corpus statistics.',
+    description: 'Generate v4 EXECUTABLE style guide with example-first format. Zero tolerance rules, phrase libraries, and validation checklists.',
     inputSchema: {
       corpus_name: z.string().describe('Name of analyzed corpus'),
       corpus_dir: z.string().describe('Directory where corpus is stored'),
@@ -98,10 +100,20 @@ server.registerTool(
   },
   async ({ corpus_name, corpus_dir }) => {
     try {
-      const result = await generateStyleGuide({
-        corpus_name,
-        corpus_dir,
-      });
+      const corpusPath = path.join(corpus_dir, corpus_name);
+      const analysisDir = path.join(corpusPath, 'analysis');
+      
+      // Generate v4 guide
+      const guideContent = await generateNarrativeGuideV4(analysisDir, corpus_name);
+      
+      // Write to file
+      const guidePath = path.join(corpusPath, `writing_style_${corpus_name}.md`);
+      await fs.writeFile(guidePath, guideContent, 'utf-8');
+      
+      const result = {
+        success: true,
+        guide_path: guidePath
+      };
       
       return {
         content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],

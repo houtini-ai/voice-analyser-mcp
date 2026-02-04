@@ -1,20 +1,18 @@
-# Voice Analyser
+# Voice Analyser MCP
 
 [![npm version](https://img.shields.io/npm/v/@houtini/voice-analyser)](https://www.npmjs.com/package/@houtini/voice-analyser)
 [![Known Vulnerabilities](https://snyk.io/test/github/houtini-ai/voice-analyser-mcp/badge.svg)](https://snyk.io/test/github/houtini-ai/voice-analyser-mcp)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-> **Experimental library** for extracting statistical voice models from your published writing. Generates immersive style guides that teach LLMs to replicate how you actually write - not through rules, but through examples and rhythm patterns.
+> MCP server that analyses your published writing and generates executable style guides for voice-matched content creation.
 
-## Why This Exists
+## What This Does
 
-Traditional style guides list rules: "Use short sentences. Vary paragraph length. Include personal anecdotes."
+I built this because traditional style guides don't work. They tell you "use short sentences" and "vary paragraph length" - rules that sound helpful but produce robotic output when you try to follow them.
 
-This doesn't work. Writers don't follow rules - they channel voice.
+This tool extracts statistical patterns from your published writing and generates a style guide that teaches through **zero tolerance rules, phrase libraries, and validation checklists** rather than vague principles.
 
-This tool extracts the statistical fingerprint of *your writing* and presents it as immersive examples with annotations showing *what makes each passage feel human*. The goal is voice replication through pattern recognition, not rule compliance.
-
-**Status:** Experimental. The approach works but is under active development.
+Version 1.4.0 focuses on executable instructions: forbidden word lists with alternatives, 50+ actual phrases from your corpus, and checkbox validation that catches AI slop before you publish.
 
 ## Installation
 
@@ -33,217 +31,191 @@ Add to your `claude_desktop_config.json`:
 }
 ```
 
-**Config locations:**
+**Config file locations:**
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Linux: `~/.config/Claude/claude_desktop_config.json`
 
 Restart Claude Desktop after saving.
 
-### Requirements
-
-- Node.js 20+
+**Requirements:** Node.js 20+
 
 ## Quick Start
 
-### 1. Create an Output Directory
+### 1. Create Output Directory
 
-First, create a directory where your corpus and analysis will be stored:
+Pick a directory for corpus storage and analysis:
 
 ```
 C:\writing\voice-models\        (Windows)
 ~/writing/voice-models/          (Mac/Linux)
 ```
 
-This directory will contain:
-- Collected articles (markdown)
-- Analysis JSON files
-- Generated voice guides
+This holds collected articles, analysis JSON files, and generated style guides.
 
-### 2. Collect Your Writing
+### 2. Collect Writing Corpus
 
+In Claude Desktop:
 ```
 Collect corpus from https://yoursite.com/post-sitemap.xml 
 Save as "my-voice" in "C:\writing\voice-models"
 ```
 
-The tool needs:
-- `sitemap_url` - Your XML sitemap URL
-- `output_name` - A name for this corpus (e.g., "my-voice", "blog-posts")
-- `output_dir` - The directory you created above
+Parameters:
+- `sitemap_url` - XML sitemap URL
+- `output_name` - Corpus identifier (e.g., "my-voice")
+- `output_dir` - Directory you created above
+- `max_articles` - Optional limit (default: 100)
 
-**Example with all parameters:**
-```
-Collect corpus from https://example.com/post-sitemap.xml
-Output name: "technical-writing"  
-Output directory: "C:\writing\voice-models"
-Maximum articles: 50
-```
+The tool crawls your sitemap, extracts clean content, and saves markdown files.
 
-### 3. Analyse Patterns
+### 3. Run Analysis
 
 ```
 Analyse corpus "my-voice" in directory "C:\writing\voice-models"
 ```
 
-This runs 14 analysers covering vocabulary, sentence structure, voice markers, argument flow, and paragraph transitions.
+This runs 15+ analysers covering:
+- Vocabulary tiers (AI slop detection, formality scoring)
+- Phrase extraction (opening patterns, transitions, caveats)
+- Sentence structure and rhythm
+- Voice markers and conversational devices
+- Punctuation habits
 
-### 4. Generate Voice Guide
-
-```
-Generate narrative guide for "my-voice" in directory "C:\writing\voice-models"
-```
-
-Creates an immersive style guide with annotated examples at:
-`C:\writing\voice-models\my-voice\writing_style_my-voice_narrative.md`
-
-## Using the Voice Guide
-
-Once generated, the voice guide can be loaded into any LLM conversation to help it write in your voice.
-
-### Loading the Guide
+### 4. Generate Style Guide v4
 
 ```
-Load the file C:\writing\voice-models\my-voice\writing_style_my-voice_narrative.md 
-and use it as a reference for all writing in this conversation.
+Generate style guide for "my-voice" in directory "C:\writing\voice-models"
 ```
 
-### Example Prompts for Content Generation
+Creates an example-first guide at:
+`C:\writing\voice-models\my-voice\writing_style_my-voice.md`
 
-**Blog post:**
-```
-Using the voice guide as your reference, write a blog post about [topic].
+## What v1.4.0 Changed
 
-Key requirements:
-- Match the sentence rhythm patterns shown in the examples
-- Use the conversational devices naturally (not forced)
-- Include the micro-rhythms: mid-thought pivots, embedded uncertainty, present-tense immediacy
-- Vary sentence length as shown in the statistical targets
-- Use British/American spelling as indicated in the guide
-```
+Previous versions generated statistical analysis that was accurate but not useful for writing. v1.4.0 restructures the output:
 
-**Technical article:**
-```
-Reference the voice guide and write a technical explanation of [concept].
+**Before:** 60% statistics, 40% guidance  
+**After:** 70% examples, 30% statistics
 
-Channel the voice by:
-- Opening with the pattern shown in "Opening Moves" section
-- Using specific product/tool names, not generic references  
-- Including admissions of complexity or uncertainty where authentic
-- Following the argument flow patterns from the guide
-- Matching the punctuation habits (especially dash usage)
-```
+### New Style Guide Structure
 
-**Product review:**
-```
-Using the loaded voice guide, write a review of [product].
+**Part 1: Zero Tolerance Rules**
+- Forbidden vocabulary (AI slop) with alternatives
+- Formal words flagged with casual replacements
+- Punctuation rules (em-dash detection)
 
-Capture the voice by:
-- Starting with personal context (why you tested this)
-- Blending technical specs with practical implications
-- Using the transition patterns between paragraphs
-- Including the "human tells" - parenthetical asides, mid-thought corrections
-- Ending with the closing patterns shown in examples
-```
+**Part 2: Phrase Library (50+ Examples)**
+- Opening patterns (personal story, direct action, protective warnings)
+- Equipment references (possessive vs generic)
+- Caveat phrases (honesty markers)
+- Transition patterns
 
-**Email/communication:**
-```
-Write an email about [subject] using the voice patterns from the guide.
+**Part 3: Sentence Patterns**
+- Rhythm variation targets with corpus examples
+- First-person usage frequency
+- Natural sentence flow demonstrations
 
-Focus on:
-- Conversational markers appearing naturally
-- Sentence length variation (some punchy, some complex)
-- The hedging/confidence balance shown in statistics
-- First-person usage matching the corpus frequency
-```
+**Part 4: Validation Checklist**
+- Critical rules (must pass)
+- Voice match rules (should pass)
+- Actionable checkbox format
 
-### Validation After Writing
+**Part 5: Quick Reference**
+- Top phrases by frequency
+- Statistics summary
 
-The guide includes statistical targets. After writing, check:
+## Using the Style Guide
+
+Load the generated guide into Claude conversations:
 
 ```
-Review what you just wrote against the voice guide metrics:
-- Does sentence length variation match the target standard deviation?
-- Is first-person frequency within the expected range?
-- Are conversational markers present but not overused?
-- Does the rhythm feel like the extended examples?
+Load C:\writing\voice-models\my-voice\writing_style_my-voice.md 
+and use it to write [content type] about [topic]
 ```
 
-## What Gets Analysed
-
-### Core Voice Patterns
-- **Vocabulary** - Word choice, British/American markers, domain specificity
-- **Sentence structure** - Length distribution, openers, complexity patterns
-- **Voice markers** - First-person usage, hedging language, conversational markers
-- **Punctuation** - Dash types, comma density, parenthetical frequency
-
-### Argument & Flow Patterns
-- **Argument flow** - How you open, build, and close arguments
-- **Paragraph transitions** - How ideas connect across paragraphs
-- **Conversational devices** - "look", "frankly", "actually" and when they appear
-
-### Micro-Rhythm Detection
-The guide annotates examples with invisible patterns that make writing feel human:
-- Mid-thought pivots (comma before "and", "but", "so")
-- Present-tense immediacy ("Right now, it's...")
-- Embedded uncertainty ("I think", "probably")
-- Casual sentence starters ("So,", "And,", "But,")
-- Parenthetical asides
-- Punchy fragments contrasting with longer sentences
-
-## Output Structure
+The guide includes validation checklists. After Claude writes, run:
 
 ```
-your-output-directory/
-└── corpus-name/
-    ├── articles/                              # Collected markdown files
-    ├── corpus.json                            # Metadata
-    ├── analysis/                              # JSON analysis files
-    │   ├── vocabulary.json
-    │   ├── sentence.json
-    │   ├── voice.json
-    │   ├── paragraph.json
-    │   ├── punctuation.json
-    │   ├── function-words.json
-    │   ├── argument-flow.json
-    │   └── paragraph-transitions.json
-    └── writing_style_[name]_narrative.md      # The voice guide
+Check what you just wrote against the style guide validation checklist.
+Report any violations.
 ```
 
-## Minimum Corpus Size
+### Critical Validation Rules
+
+The guide flags these as must-pass:
+- Zero AI slop words (delve, leverage, unlock, seamless, robust)
+- Zero em-dashes if corpus doesn't use them
+- British/American spelling consistency
+- Equipment named specifically (not "the product")
+
+### Voice Match Validation
+
+The guide checks these as should-pass:
+- First-person frequency matches target (~0.8 per 100 words typical)
+- Sentence length varies wildly (5-word to 40-word sentences)
+- Honest caveats present ("It's not perfect", "I wish I'd...")
+- Opening follows corpus patterns
+
+## Analysis Output
+
+The tool generates these JSON files in `corpus-name/analysis/`:
+
+**Core Analysis:**
+- `vocabulary.json` - Word choice, domain terms, British/American markers
+- `sentence.json` - Length distribution, complexity patterns
+- `voice.json` - First-person usage, hedging language, conversational markers
+- `paragraph.json` - Structure and transition patterns
+- `punctuation.json` - Dash types, comma density, parenthetical frequency
+
+**v1.4.0 Additions:**
+- `vocabulary-tiers.json` - AI slop detection, formality scoring with alternatives
+- `phrase-library.json` - 50+ extracted phrases organized by type
+
+**Advanced Analysis:**
+- `function-words.json` - Z-scores for style fingerprinting
+- `anti-mechanical.json` - Naturalness scoring
+- `argument-flow.json` - How arguments open, build, close
+- `paragraph-transitions.json` - Cross-paragraph connection patterns
+- `specificity-patterns.json` - Possessive vs generic references
+
+## Minimum Corpus Requirements
 
 - **Minimum:** 15,000 words (~20 articles)
-- **Recommended:** 30,000 words
+- **Recommended:** 30,000 words (~40 articles)
 - **Ideal:** 50,000+ words
 
-Below 15k words, statistical patterns become unreliable.
+Below 15k words, statistical patterns become unreliable. The phrase library needs volume to find frequently-used patterns.
 
-## Tools Reference
+## MCP Tools Reference
 
 ### collect_corpus
 
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `sitemap_url` | Yes | XML sitemap URL |
-| `output_name` | Yes | Corpus identifier (e.g., "my-voice") |
-| `output_dir` | Yes | Directory to store corpus |
-| `max_articles` | No | Limit (default: 100) |
-| `article_pattern` | No | Regex filter for URLs |
+Crawls sitemap and collects clean writing corpus.
+
+**Parameters:**
+- `sitemap_url` (required) - XML sitemap URL
+- `output_name` (required) - Corpus identifier
+- `output_dir` (required) - Storage directory
+- `max_articles` (optional) - Limit, default 100
+- `article_pattern` (optional) - Regex URL filter
 
 ### analyze_corpus
 
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `corpus_name` | Yes | Name from collect_corpus |
-| `corpus_dir` | Yes | Directory containing corpus |
-| `analysis_type` | No | full, quick, vocabulary, syntax |
+Runs linguistic analysis on collected corpus.
 
-### generate_narrative_guide
+**Parameters:**
+- `corpus_name` (required) - Name from collect_corpus
+- `corpus_dir` (required) - Directory containing corpus
+- `analysis_type` (optional) - full, quick, vocabulary, syntax (default: full)
 
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `corpus_name` | Yes | Name from analyze_corpus |
-| `corpus_dir` | Yes | Directory containing corpus |
+### generate_style_guide
+
+Generates v4 executable style guide.
+
+**Parameters:**
+- `corpus_name` (required) - Name from analyze_corpus
+- `corpus_dir` (required) - Directory containing analysis
 
 ## Development
 
@@ -254,13 +226,37 @@ npm install
 npm run build
 ```
 
-## Limitations
+Local development mode in Claude Desktop config:
 
-- Requires XML sitemap (RSS feeds not currently supported)
-- Works best with consistent single-author content
-- Mixed authorship or heavily edited content produces weaker signals
-- The approach is experimental - results vary by writing style
+```json
+{
+  "mcpServers": {
+    "voice-analysis": {
+      "command": "node",
+      "args": ["C:\\path\\to\\mcp-server-voice-analysis\\dist\\index.js"]
+    }
+  }
+}
+```
+
+## Known Limitations
+
+- Needs XML sitemap (RSS feeds not supported)
+- Works best with single-author content
+- Mixed authorship weakens statistical signals
+- Heavily edited content produces less distinct voice patterns
+- Transition phrase detection currently returns sparse results (being improved)
+
+## What's Next
+
+v1.5.0 planned features:
+- Automated text validation against corpus
+- Real-time writing feedback
+- Custom forbidden vocabulary per corpus
+- Improved transition phrase detection
 
 ---
 
-Apache License 2.0 - [Houtini.ai](https://houtini.ai)
+**License:** Apache 2.0  
+**Author:** [Houtini](https://houtini.ai)  
+**Version:** 1.4.0
