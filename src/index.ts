@@ -18,7 +18,7 @@ import fs from 'fs/promises';
 
 const server = new McpServer({
   name: 'voice-analysis-server',
-  version: '1.2.1',
+  version: '1.4.0',
 });
 
 // Register tools using new SDK API
