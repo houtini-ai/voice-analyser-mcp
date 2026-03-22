@@ -12,6 +12,10 @@
   </a>
 </p>
 
+> **Quick Navigation**
+>
+> [What this does](#what-this-does) | [What changed in v2](#what-changed-in-v200) | [Installation](#installation) | [Quick start](#quick-start) | [Using the style guide](#using-the-style-guide) | [Analysis output](#analysis-output) | [Tools reference](#mcp-tools-reference) | [Known limitations](#known-limitations)
+
 ## What This Does
 
 Point it at a sitemap, it crawls your articles, runs 16 linguistic analysers, and generates a style guide built from your actual writing patterns. Not generic advice — your phrases, your sentence rhythms, your quirks.
@@ -57,20 +61,21 @@ Add to your `claude_desktop_config.json`:
 }
 ```
 
-### Claude Code
+### Claude Code (CLI)
 
-Add to your `.claude/settings.json`:
+Claude Code uses a different registration mechanism -- it doesn't read `claude_desktop_config.json` or `.claude/settings.json` for MCP servers. Use `claude mcp add` instead:
 
-```json
-{
-  "mcpServers": {
-    "voice-analysis": {
-      "command": "npx",
-      "args": ["-y", "@houtini/voice-analyser@latest"]
-    }
-  }
-}
+```bash
+claude mcp add -s user voice-analysis -- npx -y @houtini/voice-analyser@latest
 ```
+
+Verify with:
+
+```bash
+claude mcp get voice-analysis
+```
+
+You should see `Status: Connected`.
 
 **Config file locations (Claude Desktop):**
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
