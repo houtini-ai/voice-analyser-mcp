@@ -1,7 +1,6 @@
 # Voice Analyser MCP
 
 [![npm version](https://img.shields.io/npm/v/@houtini/voice-analyser)](https://www.npmjs.com/package/@houtini/voice-analyser)
-[![Known Vulnerabilities](https://snyk.io/test/github/houtini-ai/voice-analyser-mcp/badge.svg)](https://snyk.io/test/github/houtini-ai/voice-analyser-mcp)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 > MCP server that analyses your published writing and generates executable style guides for voice-matched content creation.
