@@ -199,7 +199,9 @@ function buildSkillMd(ctx: SkillBuildContext): string {
     lines.push('');
   }
 
-  const caveats = (ctx.phraseLibrary?.caveatPhrases ?? []).slice(0, 8);
+  const caveats = (ctx.phraseLibrary?.caveatPhrases ?? [])
+    .filter(c => isRealCaveat(c.phrase))
+    .slice(0, 8);
   if (caveats.length > 0) {
     lines.push('## How to hedge');
     lines.push('');
@@ -223,8 +225,13 @@ function collectRules(ctx: SkillBuildContext): string[] {
   const rules: string[] = [];
 
   const emDashes = ctx.punctuation?.dashTypes?.emDash ?? 0;
+  const enDashes = ctx.punctuation?.dashTypes?.enDash ?? 0;
   if (emDashes === 0) {
-    rules.push('No em-dashes (—). Use hyphen with spaces, a comma, or a full stop.');
+    if (enDashes > 5) {
+      rules.push('No em-dashes (—). En-dashes (–) are fine and used liberally for asides.');
+    } else {
+      rules.push('No em-dashes (—). Use hyphen with spaces, a comma, or a full stop.');
+    }
   }
 
   const hollow = (ctx.voice?.hollowIntensifiers ?? []).slice(0, 8);
@@ -245,14 +252,15 @@ function collectRules(ctx: SkillBuildContext): string[] {
     rules.push(`No marketing speak: ${list}.`);
   }
 
-  const specific = ctx.voice?.equipmentSpecificity?.specific ?? [];
+  const cleanSpecific = (ctx.voice?.equipmentSpecificity?.specific ?? [])
+    .filter(s => s.phrase.trim().split(/\s+/).length <= 4);
   const generic = ctx.voice?.equipmentSpecificity?.generic ?? [];
-  if (specific.length > 0 && generic.length > 0) {
-    const yesEx = specific.slice(0, 2).map(s => `"${cleanQuote(s.phrase)}"`).join(', ');
+  if (cleanSpecific.length >= 2 && generic.length > 0) {
+    const yesEx = cleanSpecific.slice(0, 2).map(s => `"${cleanQuote(s.phrase)}"`).join(', ');
     const noEx = generic.slice(0, 2).map(g => `"${cleanQuote(g.phrase)}"`).join(', ');
     rules.push(`Name kit by make with a possessive: ${yesEx}. Not ${noEx}.`);
-  } else if (specific.length > 0) {
-    const yesEx = specific.slice(0, 2).map(s => `"${cleanQuote(s.phrase)}"`).join(', ');
+  } else if (cleanSpecific.length >= 2) {
+    const yesEx = cleanSpecific.slice(0, 2).map(s => `"${cleanQuote(s.phrase)}"`).join(', ');
     rules.push(`Name kit by make with a possessive: ${yesEx}.`);
   }
 
@@ -294,7 +302,7 @@ function collectRecurring(voice: VoiceMarkers | null): PhraseExample[] {
   ];
   const merged = new Map<string, { display: string; count: number }>();
   for (const item of pool) {
-    const display = item.phrase.trim();
+    const display = capitaliseFirst(item.phrase.trim());
     const key = display.toLowerCase();
     if (!key) continue;
     const existing = merged.get(key);
@@ -308,6 +316,23 @@ function collectRecurring(voice: VoiceMarkers | null): PhraseExample[] {
     .map(({ display, count }) => ({ phrase: display, count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 12);
+}
+
+function capitaliseFirst(s: string): string {
+  if (!s) return s;
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+const STRONG_HEDGE_TERMS = [
+  'wish', 'ideal', 'perfect', 'differently', 'mistake', 'regret',
+  'frustrating', 'lesson', 'in retrospect', 'in my case', 'mileage',
+  'frankly', 'i\'d do', 'should have', 'would have', 'could have',
+  'not great', 'not sure', 'avoidable', 'could be better'
+];
+
+function isRealCaveat(phrase: string): boolean {
+  const lower = phrase.toLowerCase();
+  return STRONG_HEDGE_TERMS.some(term => lower.includes(term));
 }
 
 function cleanQuote(s: string): string {
