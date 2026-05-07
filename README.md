@@ -1,4 +1,4 @@
-# Voice Analyser MCP
+# Voice Analyser: Generate a Skill.md for your Writing Style to Make Claude Talk like You - MCP analyses your sitemap, fetches and analyses a Corpus and generates a skill.md file 
 
 [![npm version](https://img.shields.io/npm/v/@houtini/voice-analyser)](https://www.npmjs.com/package/@houtini/voice-analyser)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
