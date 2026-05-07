@@ -59,19 +59,17 @@ server.registerTool(
   'analyze_corpus',
   {
     title: 'Analyze Corpus',
-    description: 'Perform linguistic analysis on collected corpus (vocabulary, sentence structure, voice markers)',
+    description: 'Perform linguistic analysis on collected corpus. Runs the six analysers that feed the voice skill: phrases, voice markers, punctuation, vocabulary tiers, vulnerability patterns, and specificity patterns.',
     inputSchema: {
       corpus_name: z.string().describe('Name of corpus to analyze'),
       corpus_dir: z.string().describe('Directory where corpus is stored'),
-      analysis_type: z.enum(['full', 'quick', 'vocabulary', 'syntax']).optional().default('full').describe('Type of analysis to perform (default: full)'),
     },
   },
-  async ({ corpus_name, corpus_dir, analysis_type }) => {
+  async ({ corpus_name, corpus_dir }) => {
     try {
       const result = await analyzeCorpus({
         corpus_name,
         corpus_dir,
-        analysis_type,
       });
       
       return {

@@ -2,6 +2,9 @@ import fs from 'fs/promises';
 import path from 'path';
 import type { PhraseLibrary, PhraseExample } from '../analyzers/phrase-extraction.js';
 import type { VoiceMarkers } from '../analyzers/voice-markers.js';
+import type { VocabularyTierAnalysis } from '../analyzers/vocabulary-tiers.js';
+import type { VulnerabilityAnalysis } from '../analyzers/vulnerability-patterns.js';
+import type { SpecificityAnalysis } from '../analyzers/specificity-patterns.js';
 
 export interface GenerateVoiceSkillParams {
   corpus_name: string;
@@ -39,6 +42,9 @@ export async function generateVoiceSkill(
   const phraseLibrary = await loadJson<PhraseLibrary>(path.join(analysisDir, 'phrase-library.json'));
   const voice = await loadJson<VoiceMarkers>(path.join(analysisDir, 'voice.json'));
   const punctuation = await loadJson<any>(path.join(analysisDir, 'punctuation.json'));
+  const vocabTiers = await loadJson<VocabularyTierAnalysis>(path.join(analysisDir, 'vocabulary-tiers.json'));
+  const vulnerability = await loadJson<VulnerabilityAnalysis>(path.join(analysisDir, 'vulnerability-patterns.json'));
+  const specificity = await loadJson<SpecificityAnalysis>(path.join(analysisDir, 'specificity-patterns.json'));
 
   const samplesWritten = await writeSamples(articlesDir, samplesDir, sample_count);
 
@@ -48,6 +54,9 @@ export async function generateVoiceSkill(
     phraseLibrary,
     voice,
     punctuation,
+    vocabTiers,
+    vulnerability,
+    specificity,
   });
 
   await fs.writeFile(path.join(skillDir, 'SKILL.md'), skillMd, 'utf-8');
@@ -125,6 +134,9 @@ interface SkillBuildContext {
   phraseLibrary: PhraseLibrary | null;
   voice: VoiceMarkers | null;
   punctuation: any;
+  vocabTiers: VocabularyTierAnalysis | null;
+  vulnerability: VulnerabilityAnalysis | null;
+  specificity: SpecificityAnalysis | null;
 }
 
 function buildSkillMd(ctx: SkillBuildContext): string {
@@ -187,7 +199,7 @@ function buildSkillMd(ctx: SkillBuildContext): string {
     lines.push('');
   }
 
-  const recurring = collectRecurring(ctx.voice);
+  const recurring = collectRecurring(ctx);
   if (recurring.length > 0) {
     lines.push('## Phrases that recur');
     lines.push('');
@@ -252,19 +264,49 @@ function collectRules(ctx: SkillBuildContext): string[] {
     rules.push(`No marketing speak: ${list}.`);
   }
 
-  const cleanSpecific = (ctx.voice?.equipmentSpecificity?.specific ?? [])
-    .filter(s => s.phrase.trim().split(/\s+/).length <= 4);
-  const generic = ctx.voice?.equipmentSpecificity?.generic ?? [];
-  if (cleanSpecific.length >= 2 && generic.length > 0) {
-    const yesEx = cleanSpecific.slice(0, 2).map(s => `"${cleanQuote(s.phrase)}"`).join(', ');
-    const noEx = generic.slice(0, 2).map(g => `"${cleanQuote(g.phrase)}"`).join(', ');
-    rules.push(`Name kit by make with a possessive: ${yesEx}. Not ${noEx}.`);
-  } else if (cleanSpecific.length >= 2) {
-    const yesEx = cleanSpecific.slice(0, 2).map(s => `"${cleanQuote(s.phrase)}"`).join(', ');
-    rules.push(`Name kit by make with a possessive: ${yesEx}.`);
-  }
+  const slopRule = buildAiSlopRule(ctx.vocabTiers);
+  if (slopRule) rules.push(slopRule);
+
+  const equipmentRule = buildEquipmentRule(ctx.specificity);
+  if (equipmentRule) rules.push(equipmentRule);
 
   return rules;
+}
+
+function buildAiSlopRule(tiers: VocabularyTierAnalysis | null): string | null {
+  const slop = (tiers?.aiSlop ?? []).slice(0, 6);
+  if (slop.length === 0) return null;
+  const parts = slop
+    .map(s => {
+      const alt = s.suggestedAlternatives?.[0];
+      return alt ? `"${s.word}" (use "${alt}")` : `"${s.word}"`;
+    });
+  return `No AI slop: ${parts.join(', ')}.`;
+}
+
+function buildEquipmentRule(spec: SpecificityAnalysis | null): string | null {
+  if (!spec) return null;
+
+  const firstPersonProperNoun = (spec.possessivePatterns ?? [])
+    .filter(p => p.category === 'possessive')
+    .filter(p => /^(my|our)\s+[A-Z]/.test(p.pattern))
+    .filter(p => p.pattern.trim().split(/\s+/).length <= 4)
+    .sort((a, b) => b.frequency - a.frequency);
+
+  const genericThe = (spec.genericPatterns ?? [])
+    .filter(p => p.category === 'generic_article')
+    .filter(p => /^the\s+[A-Z]/.test(p.pattern))
+    .filter(p => p.pattern.trim().split(/\s+/).length <= 3)
+    .sort((a, b) => b.frequency - a.frequency);
+
+  if (firstPersonProperNoun.length < 2) return null;
+
+  const yesEx = firstPersonProperNoun.slice(0, 3).map(s => `"${cleanQuote(s.pattern)}"`).join(', ');
+  if (genericThe.length > 0) {
+    const noEx = genericThe.slice(0, 2).map(g => `"${cleanQuote(g.pattern)}"`).join(', ');
+    return `Name kit by make with a first-person possessive: ${yesEx}. Not ${noEx}.`;
+  }
+  return `Name kit by make with a first-person possessive: ${yesEx}.`;
 }
 
 function collectOpenings(lib: PhraseLibrary | null): string[] {
@@ -290,16 +332,32 @@ function collectOpenings(lib: PhraseLibrary | null): string[] {
   return out.slice(0, 12);
 }
 
-function collectRecurring(voice: VoiceMarkers | null): PhraseExample[] {
-  if (!voice) return [];
-  const pool: PhraseExample[] = [
-    ...(voice.signatureHedging ?? []),
-    ...(voice.collegialPatterns ?? []),
-    ...(voice.identityMarkers?.genuineInterest ?? []),
-    ...(voice.identityMarkers?.honestObsession ?? []),
-    ...(voice.identityMarkers?.humbleHelper ?? []),
-    ...(voice.identityMarkers?.transparencyCommitment ?? []),
-  ];
+function collectRecurring(ctx: SkillBuildContext): PhraseExample[] {
+  const { voice, vulnerability } = ctx;
+
+  const pool: PhraseExample[] = [];
+  if (voice) {
+    pool.push(
+      ...(voice.signatureHedging ?? []),
+      ...(voice.collegialPatterns ?? []),
+      ...(voice.identityMarkers?.genuineInterest ?? []),
+      ...(voice.identityMarkers?.honestObsession ?? []),
+      ...(voice.identityMarkers?.humbleHelper ?? []),
+      ...(voice.identityMarkers?.transparencyCommitment ?? []),
+    );
+  }
+  if (vulnerability) {
+    const vp = [
+      ...(vulnerability.uncertaintyMarkers ?? []),
+      ...(vulnerability.mistakeAdmissions ?? []),
+    ];
+    for (const v of vp) {
+      if (v.phrase.trim().includes(' ')) {
+        pool.push({ phrase: v.phrase, count: v.frequency });
+      }
+    }
+  }
+
   const merged = new Map<string, { display: string; count: number }>();
   for (const item of pool) {
     const display = capitaliseFirst(item.phrase.trim());
