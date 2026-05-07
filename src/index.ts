@@ -12,9 +12,7 @@ import * as z from 'zod';
 
 import { collectCorpus, CollectCorpusParams } from './tools/collect-corpus.js';
 import { analyzeCorpus, AnalyzeCorpusParams } from './tools/analyze-corpus.js';
-import { generateNarrativeGuideV4 } from './tools/generate-narrative-guide-v4.js';
-import path from 'path';
-import fs from 'fs/promises';
+import { generateVoiceSkill } from './tools/generate-voice-skill.js';
 
 const server = new McpServer({
   name: 'voice-analysis-server',
@@ -61,19 +59,17 @@ server.registerTool(
   'analyze_corpus',
   {
     title: 'Analyze Corpus',
-    description: 'Perform linguistic analysis on collected corpus (vocabulary, sentence structure, voice markers)',
+    description: 'Perform linguistic analysis on collected corpus. Runs the six analysers that feed the voice skill: phrases, voice markers, punctuation, vocabulary tiers, vulnerability patterns, and specificity patterns.',
     inputSchema: {
       corpus_name: z.string().describe('Name of corpus to analyze'),
       corpus_dir: z.string().describe('Directory where corpus is stored'),
-      analysis_type: z.enum(['full', 'quick', 'vocabulary', 'syntax']).optional().default('full').describe('Type of analysis to perform (default: full)'),
     },
   },
-  async ({ corpus_name, corpus_dir, analysis_type }) => {
+  async ({ corpus_name, corpus_dir }) => {
     try {
       const result = await analyzeCorpus({
         corpus_name,
         corpus_dir,
-        analysis_type,
       });
       
       return {
@@ -89,39 +85,27 @@ server.registerTool(
 );
 
 server.registerTool(
-  'generate_style_guide',
+  'generate_voice_skill',
   {
-    title: 'Generate Style Guide',
-    description: 'Generate v4 EXECUTABLE style guide with example-first format. Zero tolerance rules, phrase libraries, and validation checklists.',
+    title: 'Generate Voice Skill',
+    description: 'Generate a Claude Skill bundle (SKILL.md plus real article samples) so Claude writes prose in the corpus author\'s voice by mimicking actual writing rather than following rule lists.',
     inputSchema: {
       corpus_name: z.string().describe('Name of analyzed corpus'),
       corpus_dir: z.string().describe('Directory where corpus is stored'),
+      sample_count: z.number().int().positive().optional().default(8).describe('Number of article samples to bundle into the skill (default: 8)'),
     },
   },
-  async ({ corpus_name, corpus_dir }) => {
+  async ({ corpus_name, corpus_dir, sample_count }) => {
     try {
-      const corpusPath = path.join(corpus_dir, corpus_name);
-      const analysisDir = path.join(corpusPath, 'analysis');
-      
-      // Generate v4 guide
-      const guideContent = await generateNarrativeGuideV4(analysisDir, corpus_name);
-      
-      // Write to file
-      const guidePath = path.join(corpusPath, `writing_style_${corpus_name}.md`);
-      await fs.writeFile(guidePath, guideContent, 'utf-8');
-      
-      const result = {
-        success: true,
-        guide_path: guidePath
-      };
-      
+      const result = await generateVoiceSkill({ corpus_name, corpus_dir, sample_count });
+
       return {
         content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
       };
     } catch (error) {
       throw new McpError(
         ErrorCode.InternalError,
-        `Guide generation failed: ${error instanceof Error ? error.message : String(error)}`
+        `Skill generation failed: ${error instanceof Error ? error.message : String(error)}`
       );
     }
   }

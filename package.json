@@ -1,6 +1,6 @@
 {
   "name": "@houtini/voice-analyser",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "MCP server for automatic tone-of-voice analysis from published writing corpus",
   "type": "module",
   "main": "dist/index.js",
@@ -13,6 +13,8 @@
     "LICENSE"
   ],
   "scripts": {
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "prebuild": "npm run clean",
     "build": "tsc",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build"
