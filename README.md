@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/@houtini/voice-analyser)](https://www.npmjs.com/package/@houtini/voice-analyser)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-> MCP server that analyses your published writing and generates executable style guides for voice-matched content creation.
+> MCP server that analyses your published writing and generates a Claude Skill bundle so Claude writes prose in your voice by mimicking real samples.
 
 <p align="center">
   <a href="https://glama.ai/mcp/servers/@houtini-ai/voice-analyser-mcp">
@@ -13,11 +13,11 @@
 
 > **Quick Navigation**
 >
-> [What this does](#what-this-does) | [What changed in v2](#what-changed-in-v200) | [Installation](#installation) | [Quick start](#quick-start) | [Using the style guide](#using-the-style-guide) | [Analysis output](#analysis-output) | [Tools reference](#mcp-tools-reference) | [Known limitations](#known-limitations)
+> [What this does](#what-this-does) | [What changed in v2](#what-changed-in-v200) | [Installation](#installation) | [Quick start](#quick-start) | [Using the voice skill](#using-the-voice-skill) | [Analysis output](#analysis-output) | [Tools reference](#mcp-tools-reference) | [Known limitations](#known-limitations)
 
 ## What This Does
 
-Point it at a sitemap, it crawls your articles, runs 16 linguistic analysers, and generates a style guide built from your actual writing patterns. Not generic advice — your phrases, your sentence rhythms, your quirks.
+Point it at a sitemap, it crawls your articles, runs 16 linguistic analysers, and packages the result as a Claude Skill: a short SKILL.md plus real samples from your corpus. Claude reads the samples and mirrors the cadence rather than working through a rules checklist.
 
 The output is designed for LLM consumption: forbidden word lists, phrase libraries with examples, burstiness targets, and validation checklists that catch AI slop before it ships.
 
@@ -105,40 +105,29 @@ Analyse corpus "my-voice" in directory "C:\writing\voice-models"
 
 Runs 16 analysers covering vocabulary tiers, phrase extraction, sentence structure, voice markers, punctuation habits, argument flow, information density, and more. Takes 1-3 minutes depending on corpus size.
 
-### 3. Generate Style Guide
+### 3. Generate Voice Skill
 
 ```
-Generate style guide for "my-voice" in directory "C:\writing\voice-models"
+Generate voice skill for "my-voice" in directory "C:\writing\voice-models"
 ```
 
-Creates an example-first guide at:
-`C:\writing\voice-models\my-voice\writing_style_my-voice.md`
+Creates a Claude Skill bundle at:
+`C:\writing\voice-models\my-voice\skill\`
 
-## Using the Style Guide
+The bundle contains:
+- `SKILL.md` — frontmatter description, a short rules block (em-dashes, hollow intensifiers, naming kit), real openings, recurring phrases, and caveat patterns pulled directly from the corpus
+- `samples/` — 25 real articles selected across the length spectrum for cadence variety
 
-Load the generated guide into Claude conversations:
+## Using the Voice Skill
 
-```
-Load C:\writing\voice-models\my-voice\writing_style_my-voice.md
-and use it to write [content type] about [topic]
-```
-
-The guide includes validation checklists. After Claude writes:
+Install the bundle as a Claude Skill (copy to your skills directory) or load it directly into a conversation:
 
 ```
-Check what you just wrote against the style guide validation checklist.
-Report any violations.
+Read C:\writing\voice-models\my-voice\skill\SKILL.md and follow it.
+Then write [content type] about [topic].
 ```
 
-### What It Catches
-
-- AI slop words (delve, leverage, unlock, seamless, robust) with corpus-specific alternatives
-- Em-dashes when your corpus uses hyphens (or vice versa)
-- British/American spelling inconsistency
-- Generic equipment references ("the product") vs possessive ("my rig")
-- Sentence rhythm that's too uniform (low burstiness)
-- First-person frequency outside your natural range
-- Missing honest caveats and conversational devices
+The SKILL.md instructs Claude to read three random files from `samples/` before drafting and match the cadence rather than follow rule lists. Mimicry over prescription.
 
 ## Analysis Output
 
@@ -195,14 +184,15 @@ Runs 16 linguistic analysers on collected corpus.
 | `corpus_dir` | Yes | Directory containing corpus |
 | `analysis_type` | No | full, quick, vocabulary, syntax (default: full) |
 
-### generate_style_guide
+### generate_voice_skill
 
-Generates v2.0 executable style guide from analysis data.
+Generates a Claude Skill bundle (`SKILL.md` plus real article samples) from analysis data so Claude writes prose in the corpus author's voice by mimicking actual writing rather than following rule lists. Output goes to `<corpus_dir>/<corpus_name>/skill/`.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `corpus_name` | Yes | Name from analyze_corpus |
 | `corpus_dir` | Yes | Directory containing analysis |
+| `sample_count` | No | Number of article samples to bundle (default: 25) |
 
 ## Development
 
